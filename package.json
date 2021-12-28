@@ -4,7 +4,7 @@
   "description": "creating a blog with react",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "startserver": "nodemon server/index.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/Miguel-EpicJS/react-blog/issues"
   },
-  "homepage": "https://github.com/Miguel-EpicJS/react-blog#readme"
+  "homepage": "https://github.com/Miguel-EpicJS/react-blog#readme",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  }
 }
