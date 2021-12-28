@@ -1,6 +1,7 @@
+const postsRoutes = require("express").Router();
 
-module.exports = (app) => {
-    app.get('/post', (req, res) => {
-        res.status(200).json({ message: 'Connected!' });
-    });
-}
+postsRoutes.get('/', (req, res) => {
+    res.status(200).json({ message: 'Connected!' });
+});
+
+module.exports = postsRoutes;
