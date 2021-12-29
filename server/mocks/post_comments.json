@@ -1,0 +1,10 @@
+[
+    {
+        "id": 1,
+        "postid": 1,
+        "authorId": 1,
+        "content": "A comment about my own work",
+        "createdAt": 1640786950643,
+        "deleted": false
+    }
+]

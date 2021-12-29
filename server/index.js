@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use("/post", postsRoutes);
+app.use("/posts", postsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
