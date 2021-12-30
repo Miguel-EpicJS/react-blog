@@ -41,10 +41,35 @@ postsRoutes.post("/", (req, res) => {
         posts.push(addPost);
         fs.writeFileSync("server/mocks/posts.json", JSON.stringify(posts));
         res.status(200).send("Successfully created");
-    }
+    } 
+});
+postsRoutes.put("/:id", (req, res) => {
+    const posts = JSON.parse(fs.readFileSync("server/mocks/posts.json"));
+    const updatePost = posts[req.params.id - 1];
+    const {post} = req.body;
 
-    
-})
+    const keys = Object.keys(updatePost);
 
+    console.log(updatePost);
+    keys.forEach(key => {
+        if(post.hasOwnProperty(key))
+        {
+            updatePost[key] = post[key];
+        }
+    });
+    console.log(updatePost);
+
+    posts[req.params.id - 1] = updatePost;
+    fs.writeFileSync("server/mocks/posts.json", JSON.stringify(posts));
+
+    res.status(200).send("Updated");
+});
+postsRoutes.delete("/:id", (req, res) => {
+    const posts = JSON.parse(fs.readFileSync("server/mocks/posts.json"));
+    posts[req.params.id - 1].deleted = true;
+    fs.writeFileSync("server/mocks/posts.json", JSON.stringify(posts));
+
+    res.status(200).send("Deleted");
+});
 
 module.exports = postsRoutes;
