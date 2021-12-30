@@ -3,7 +3,10 @@ const postsModels = require("../models/posts.models");
 module.exports = {
     getPosts: (req, res) => {
         try {
-            res.status(200).json(postsModels.readJson());
+            const posts = postsModels.readJson();
+            res.status(200).json(posts.filter(post => {
+                return !post.deleted;
+            }));
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
@@ -13,7 +16,7 @@ module.exports = {
         try {
             const posts = postsModels.readJson();
 
-            (posts[req.params.id - 1]) !== undefined ? res.status(200).json((posts[req.params.id - 1])) : res.status(404).json("Not Found")
+            (posts[req.params.id - 1]) !== undefined && !posts[req.params.id - 1].deleted ? res.status(200).json((posts[req.params.id - 1])) : res.status(404).json("Not Found")
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
