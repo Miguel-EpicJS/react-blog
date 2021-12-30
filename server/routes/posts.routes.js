@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const postsRoutes = require("express").Router();
 const postsControllers = require("../controllers/posts.controllers")
 
