@@ -7,6 +7,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 const postsRoutes = require("./routes/posts.routes");
+const usersRoutes = require("./routes/users.routes");
 
 
 app.use(logger("dev"));
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/posts", postsRoutes);
+app.use("/users", usersRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
