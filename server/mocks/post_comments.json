@@ -1,10 +1,1 @@
-[
-    {
-        "id": 1,
-        "postid": 1,
-        "authorId": 1,
-        "content": "A comment about my own work",
-        "createdAt": 1640786950643,
-        "deleted": false
-    }
-]
+[{"id":1,"postid":1,"authorId":1,"content":"A comment about my own work","createdAt":1640786950643,"updatedAt":1640786950643,"deleted":false},{"id":2,"postid":1,"authorId":1,"content":"asd","createdAt":1641047638237,"updatedAt":1641047665819,"deleted":true}]

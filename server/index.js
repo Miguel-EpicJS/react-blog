@@ -8,6 +8,7 @@ const port = process.env.PORT || 3001;
 
 const postsRoutes = require("./routes/posts.routes");
 const usersRoutes = require("./routes/users.routes");
+const postCommentsRoutes = require("./routes/post_comments.routes");
 
 
 app.use(logger("dev"));
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 
 app.use("/posts", postsRoutes);
 app.use("/users", usersRoutes);
+app.use("/post-comments", postCommentsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
