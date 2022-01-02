@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const usersModels = require("../models/users.models");
 
 const bcrypt = require("bcrypt");
@@ -34,7 +36,10 @@ module.exports = {
             });
 
             if (result) {
-                res.status(200).send("Logged");
+                const token = jwt.sign({ user }, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", {
+                    expiresIn: 86400
+                });    
+                res.status(200).json({ auth: true, token: token });
             }else {
                 res.status(404).send("Wrong password or email");
             }
@@ -73,9 +78,14 @@ module.exports = {
             });
 
             if (ok && unicEmail) {
+
+                const token = jwt.sign({ addUser }, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", {
+                    expiresIn: 86400
+                });
+
                 users.push(addUser);
                 usersModels.updateJson(users);
-                res.status(200).send("Successfully created");
+                res.status(200).json({ auth: true, token: token });
             }else {
                 res.status(400).send("You need more informations, or your email is already registred");
             }
