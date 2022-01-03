@@ -4,6 +4,8 @@ const usersModels = require("../models/users.models");
 
 const bcrypt = require("bcrypt");
 
+usersModels.resetJson();
+
 module.exports = {
     getUsers: (req, res) => {
         try {
@@ -58,10 +60,10 @@ module.exports = {
 
             user.passwordHash = bcrypt.hashSync(user.password, 13);
             delete user.password
-            
+            console.log(users.length + 1);
             const addUser = {
-                id: users.length + 1,
                 ...user,
+                id: users.length + 1,
                 deleted: false,
                 registeredAt: new Date().getTime(),
                 lastLogin: new Date().getTime(),

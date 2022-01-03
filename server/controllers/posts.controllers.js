@@ -1,4 +1,8 @@
+const jwt = require('jsonwebtoken');
 const postsModels = require("../models/posts.models");
+const usersModels = require("../models/users.models");
+
+postsModels.resetJson();
 
 module.exports = {
     getPosts: (req, res) => {
@@ -25,29 +29,52 @@ module.exports = {
     postPost: (req, res) => {
         try {
             const posts = postsModels.readJson();
+            const users = usersModels.readJson();
             const { post } = req.body;
 
-            const addPost = {
-                ...post,
-                id: posts.length + 1,
-                createdAt: new Date().getTime(),
-                updatedAt: new Date().getTime(),
-                publishedAt: new Date().getTime(),
-                deleted: false,
-                likes: 0
-            }
+            jwt.verify(res.locals.token, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", (err, dec) => {
+                if (dec !== undefined) {
+                    const user = { ...dec };
+                    console.log(user);
+                    const unicEmail = users.find(us => {
+                        return us.email === user.addUser.email;
+                    });
+                    if (unicEmail) {
+                        console.log(user);
+                        const addPost = {
+                            ...post,
+                            authorId: user.addUser.id,
+                            id: posts.length + 1,
+                            createdAt: new Date().getTime(),
+                            updatedAt: new Date().getTime(),
+                            publishedAt: new Date().getTime(),
+                            deleted: false,
+                            likes: 0
+                        }
 
-            const keys = Object.keys(posts[0]);
+                        const keys = Object.keys(posts[0]);
 
-            const ok = keys.every(key => {
-                return addPost.hasOwnProperty(key);
+                        const ok = keys.every(key => {
+                            return addPost.hasOwnProperty(key);
+                        });
+
+                        if (ok === true && user) {
+                            posts.push(addPost);
+                            postsModels.updateJson(posts);
+                            res.status(200).send("Successfully created");
+                        }
+                        else {
+                            res.status(403).send("Failed");
+                        }
+                    }
+                    else {
+                        res.status(400).send("Invalid user");
+                    }
+                }
+                else {
+                    res.status(400).send("Invalid token");
+                }
             });
-
-            if (ok === true) {
-                posts.push(addPost);
-                postsModels.updateJson(posts);
-                res.status(200).send("Successfully created");
-            }
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
@@ -59,18 +86,32 @@ module.exports = {
             const updatePost = posts[req.params.id - 1];
             const { post } = req.body;
 
-            const keys = Object.keys(updatePost);
+            jwt.verify(res.locals.token, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", (err, dec) => {
+                if (dec !== undefined) {
+                    const user = { ...dec };
+                    console.log(user);
+                    const correctUser = user.addUser.id === updatePost.authorId;
+                    if (correctUser) {
+                        const keys = Object.keys(updatePost);
 
-            keys.forEach(key => {
-                if (post.hasOwnProperty(key)) {
-                    updatePost[key] = post[key];
+                        keys.forEach(key => {
+                            if (post.hasOwnProperty(key)) {
+                                updatePost[key] = post[key];
+                            }
+                        });
+
+                        posts[req.params.id - 1] = updatePost;
+                        postsModels.updateJson(posts);
+
+                        res.status(200).send("Updated");
+                    } else {
+                        res.status(400).send("Invalid user");
+                    }
                 }
-            });
-
-            posts[req.params.id - 1] = updatePost;
-            postsModels.updateJson(posts);
-
-            res.status(200).send("Updated");
+                else {
+                    res.status(400).send("Invalid token");
+                }
+            })
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
