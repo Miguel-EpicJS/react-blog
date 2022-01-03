@@ -4,8 +4,6 @@ const usersModels = require("../models/users.models");
 
 const bcrypt = require("bcrypt");
 
-usersModels.resetJson();
-
 module.exports = {
     getUsers: (req, res) => {
         try {

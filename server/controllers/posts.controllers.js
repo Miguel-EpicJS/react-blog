@@ -2,8 +2,6 @@ const jwt = require('jsonwebtoken');
 const postsModels = require("../models/posts.models");
 const usersModels = require("../models/users.models");
 
-postsModels.resetJson();
-
 module.exports = {
     getPosts: (req, res) => {
         try {
@@ -111,7 +109,7 @@ module.exports = {
                 else {
                     res.status(400).send("Invalid token");
                 }
-            })
+            });
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
@@ -120,10 +118,26 @@ module.exports = {
     deletePost: (req, res) => {
         try {
             const posts = postsModels.readJson();
-            posts[req.params.id - 1].deleted = true;
-            postsModels.updateJson(posts);
+            const deletePost = posts[req.params.id - 1];
 
-            res.status(200).send("Deleted");
+            jwt.verify(res.locals.token, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", (err, dec) => {
+                if (dec !== undefined) {
+                    const user = { ...dec };
+                    console.log(user);
+                    const correctUser = user.addUser.id === deletePost.authorId;
+                    if (correctUser) {
+                        posts[req.params.id - 1].deleted = true;
+                        postsModels.updateJson(posts);
+
+                        res.status(200).send("Deleted");
+                    } else {
+                        res.status(400).send("Invalid user");
+                    }
+                }
+                else {
+                    res.status(400).send("Invalid token");
+                }
+            });
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
