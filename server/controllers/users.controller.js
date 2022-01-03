@@ -31,15 +31,17 @@ module.exports = {
             const users = usersModels.readJson();
             const { user } = req.body;
 
-            const result = users.filter(us => {
+            const result = users.find(us => {
                 return bcrypt.compareSync(user.password, us.passwordHash) && us.email === user.email;
             });
 
-            if (result) {
-                const token = jwt.sign({ user }, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", {
+            console.log(result);
+
+            if (result !== undefined) {
+                const token = jwt.sign({ result }, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", {
                     expiresIn: 86400
                 });    
-                res.status(200).json({ auth: true, token: token });
+                res.status(200).json({ token: token });
             }else {
                 res.status(404).send("Wrong password or email");
             }
@@ -54,9 +56,7 @@ module.exports = {
             const users = usersModels.readJson();
             const { user } = req.body;
 
-            const salt = bcrypt.genSaltSync(13);
-
-            user.passwordHash = bcrypt.hashSync(user.password, salt);
+            user.passwordHash = bcrypt.hashSync(user.password, 13);
             delete user.password
             
             const addUser = {
@@ -85,7 +85,7 @@ module.exports = {
 
                 users.push(addUser);
                 usersModels.updateJson(users);
-                res.status(200).json({ auth: true, token: token });
+                res.status(200).json({ token: token });
             }else {
                 res.status(400).send("You need more informations, or your email is already registred");
             }
