@@ -40,9 +40,9 @@ module.exports = {
             if (result !== undefined) {
                 const token = jwt.sign({ result }, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", {
                     expiresIn: 86400
-                });    
+                });
                 res.status(200).json({ token: token });
-            }else {
+            } else {
                 res.status(404).send("Wrong password or email");
             }
 
@@ -86,7 +86,7 @@ module.exports = {
                 users.push(addUser);
                 usersModels.updateJson(users);
                 res.status(200).json({ token: token });
-            }else {
+            } else {
                 res.status(400).send("You need more informations, or your email is already registred");
             }
         } catch (error) {
@@ -100,18 +100,34 @@ module.exports = {
             const updateUser = users[req.params.id - 1];
             const { user } = req.body;
 
-            const keys = Object.keys(updateUser);
+            jwt.verify(res.locals.token, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", (err, dec) => {
+                if (dec !== undefined) {
+                    const us = { ...dec };
+                    console.log(us);
+                    const correctUser = us.addUser.id === users[req.params.id - 1].id;
+                    if (correctUser) {
+                        const keys = Object.keys(updateUser);
 
-            keys.forEach(key => {
-                if (user.hasOwnProperty(key)) {
-                    updateUser[key] = user[key];
+                        keys.forEach(key => {
+                            if (user.hasOwnProperty(key)) {
+                                updateUser[key] = user[key];
+                            }
+                        });
+
+                        users[req.params.id - 1] = updateUser;
+                        usersModels.updateJson(users);
+
+                        res.status(200).send("Updated");
+                    } else {
+                        res.status(400).send("Invalid user");
+                    }
+                }
+                else {
+                    res.status(400).send("Invalid token");
                 }
             });
 
-            users[req.params.id - 1] = updateUser;
-            usersModels.updateJson(users);
 
-            res.status(200).send("Updated");
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
@@ -120,10 +136,26 @@ module.exports = {
     deleteUser: (req, res) => {
         try {
             const users = usersModels.readJson();
-            users[req.params.id - 1].deleted = true;
-            usersModels.updateJson(users);
 
-            res.status(200).send("Deleted");
+            jwt.verify(res.locals.token, "3DNtHVIWV93gOAVLK4YCO5S4M4MBePNC", (err, dec) => {
+                if (dec !== undefined) {
+                    const user = { ...dec };
+                    console.log(user);
+                    const correctUser = user.result.id === users[req.params.id - 1].id;
+                    if (correctUser) {
+                        users[req.params.id - 1].deleted = true;
+                        usersModels.updateJson(users);
+
+                        res.status(200).send("Deleted");
+                    } else {
+                        res.status(400).send("Invalid user");
+                    }
+                }
+                else {
+                    res.status(400).send("Invalid token");
+                }
+            });
+
         } catch (error) {
             console.log(error);
             res.status(500).send("Server error");
